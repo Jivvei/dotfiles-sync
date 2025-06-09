@@ -49,4 +49,4 @@ help:
 	@echo "  make help       - Show this help message"
 	@echo ""
 	@echo "📝 Quick start:"
-	@echo "  git clone <repo> && cd dotfiles && make install" 
+	@echo "  git clone https://github.com/Jivvei/dotfiles.git ~/.dotfiles && cd ~/.dotfiles && make install" 

@@ -5,7 +5,7 @@
 
 set -e
 
-REPO_URL="https://github.com/YOUR_USERNAME/dotfiles.git"
+REPO_URL="https://github.com/Jivvei/dotfiles.git"
 INSTALL_DIR="$HOME/.dotfiles"
 
 # Colors

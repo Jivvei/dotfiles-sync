@@ -13,12 +13,12 @@ A smart cross-platform configuration management tool for terminal environments.
 
 ### One-Line Installation
 ```bash
-curl -fsSL https://raw.githubusercontent.com/YOUR_USERNAME/dotfiles/main/scripts/bootstrap.sh | bash
+curl -fsSL https://raw.githubusercontent.com/Jivvei/dotfiles/main/scripts/bootstrap.sh | bash
 ```
 
 ### Manual Installation
 ```bash
-git clone <your-repo-url> ~/.dotfiles
+git clone https://github.com/Jivvei/dotfiles.git ~/.dotfiles
 cd ~/.dotfiles
 make install
 ```

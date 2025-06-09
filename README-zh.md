@@ -13,12 +13,12 @@
 
 ### 一键安装
 ```bash
-curl -fsSL https://raw.githubusercontent.com/YOUR_USERNAME/dotfiles/main/scripts/bootstrap.sh | bash
+curl -fsSL https://raw.githubusercontent.com/Jivvei/dotfiles/main/scripts/bootstrap.sh | bash
 ```
 
 ### 手动安装
 ```bash
-git clone <your-repo-url> ~/.dotfiles
+git clone https://github.com/Jivvei/dotfiles.git ~/.dotfiles
 cd ~/.dotfiles
 make install
 ```
