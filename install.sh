@@ -228,14 +228,8 @@ install_configs() {
             log_info "安装 tmux 插件"
         fi
         
-        # 动态调整 tmux 中的 shell 路径
-        if command_exists fish; then
-            OPTIMAL_FISH_PATH=$(detect_smart_shell_path "fish")
-            sed -i.bak "s|set-option -g default-shell.*|set-option -g default-shell \"$OPTIMAL_FISH_PATH\"|g" "$HOME/.tmux.conf"
-            sed -i.bak "s|set -g default-shell.*|set -g default-shell \"$OPTIMAL_FISH_PATH\"|g" "$HOME/.tmux.conf"
-            sed -i.bak "s|set -g default-command.*|set -g default-command \"$OPTIMAL_FISH_PATH\"|g" "$HOME/.tmux.conf"
-            log_info "已调整 tmux 中的 shell 路径: $OPTIMAL_FISH_PATH"
-        fi
+        # 智能配置 tmux 以适应不同操作系统
+        configure_tmux_for_platform
         
         log_success "安装 tmux 配置"
     fi
@@ -250,7 +244,11 @@ install_configs() {
             if command_exists fish; then
                 OPTIMAL_FISH_PATH=$(detect_smart_shell_path "fish")
                 # 替换 [terminal] 部分的 shell 设置
-                sed -i.bak "s|shell = \".*\"|shell = \"$OPTIMAL_FISH_PATH\"|g" "$HOME/.config/alacritty/alacritty.toml"
+                if [[ "$SYSTEM" == "macos" ]]; then
+                    sed -i "" "s|shell = \".*\"|shell = \"$OPTIMAL_FISH_PATH\"|g" "$HOME/.config/alacritty/alacritty.toml"
+                else
+                    sed -i "s|shell = \".*\"|shell = \"$OPTIMAL_FISH_PATH\"|g" "$HOME/.config/alacritty/alacritty.toml"
+                fi
                 log_info "已调整 alacritty 中的 shell 路径: $OPTIMAL_FISH_PATH"
             fi
         fi
@@ -358,6 +356,109 @@ setup_local_bin_path() {
                 log_info "已添加 PATH 设置到 fish 配置"
             fi
         fi
+    fi
+}
+
+# 配置 tmux 以适应不同平台
+configure_tmux_for_platform() {
+    if [ ! -f "$HOME/.tmux.conf" ]; then
+        log_warning "tmux 配置文件不存在，跳过平台适配"
+        return
+    fi
+    
+    log_info "开始配置 tmux 跨平台适配..."
+    
+    # 1. 配置 Shell 路径
+    if command_exists fish; then
+        OPTIMAL_FISH_PATH=$(detect_smart_shell_path "fish")
+        if [[ "$SYSTEM" == "macos" ]]; then
+            sed -i "" "s|FISH_PATH_PLACEHOLDER|$OPTIMAL_FISH_PATH|g" "$HOME/.tmux.conf"
+        else
+            sed -i "s|FISH_PATH_PLACEHOLDER|$OPTIMAL_FISH_PATH|g" "$HOME/.tmux.conf"
+        fi
+        log_success "✅ 已设置 fish shell 路径: $OPTIMAL_FISH_PATH"
+    else
+        # 如果没有 fish，使用默认 shell
+        DEFAULT_SHELL=$(echo "$SHELL")
+        if [[ "$SYSTEM" == "macos" ]]; then
+            sed -i "" "s|FISH_PATH_PLACEHOLDER|$DEFAULT_SHELL|g" "$HOME/.tmux.conf"
+        else
+            sed -i "s|FISH_PATH_PLACEHOLDER|$DEFAULT_SHELL|g" "$HOME/.tmux.conf"
+        fi
+        log_warning "⚠️ 未找到 fish，使用默认 shell: $DEFAULT_SHELL"
+    fi
+    
+    # 2. 配置剪贴板工具
+    configure_clipboard_tools
+    
+    # 3. 配置终端特性
+    configure_terminal_features
+    
+    # 4. 清理备份文件
+    rm -f "$HOME/.tmux.conf.bak"
+    
+    log_success "🎯 tmux 平台适配配置完成"
+}
+
+# 配置剪贴板工具
+configure_clipboard_tools() {
+    local copy_cmd=""
+    local paste_cmd=""
+    
+    if [[ "$SYSTEM" == "macos" ]]; then
+        if command_exists pbcopy && command_exists pbpaste; then
+            copy_cmd="pbcopy"
+            paste_cmd="pbpaste"
+            log_success "📋 检测到 macOS 剪贴板工具"
+        else
+            log_warning "⚠️ macOS 系统但未找到 pbcopy/pbpaste"
+            copy_cmd="cat"  # 备用方案
+            paste_cmd="echo ''"
+        fi
+    else
+        # Linux 系统
+        if command_exists xclip; then
+            copy_cmd="xclip -in -selection clipboard"
+            paste_cmd="xclip -o -sel clipboard"
+            log_success "📋 检测到 Linux 剪贴板工具: xclip"
+        elif command_exists xsel; then
+            copy_cmd="xsel --clipboard --input"
+            paste_cmd="xsel --clipboard --output"
+            log_success "📋 检测到 Linux 剪贴板工具: xsel"
+        else
+            log_warning "⚠️ 未找到剪贴板工具，建议安装 xclip 或 xsel"
+            copy_cmd="cat"  # 备用方案
+            paste_cmd="echo ''"
+        fi
+    fi
+    
+    # 替换占位符
+    if [[ "$SYSTEM" == "macos" ]]; then
+        sed -i "" "s|CLIPBOARD_COPY_PLACEHOLDER|$copy_cmd|g" "$HOME/.tmux.conf"
+        sed -i "" "s|CLIPBOARD_PASTE_PLACEHOLDER|$paste_cmd|g" "$HOME/.tmux.conf"
+    else
+        sed -i "s|CLIPBOARD_COPY_PLACEHOLDER|$copy_cmd|g" "$HOME/.tmux.conf"
+        sed -i "s|CLIPBOARD_PASTE_PLACEHOLDER|$paste_cmd|g" "$HOME/.tmux.conf"
+    fi
+    
+    log_info "已配置剪贴板: 复制($copy_cmd) 粘贴($paste_cmd)"
+}
+
+# 配置终端特性
+configure_terminal_features() {
+    # 根据终端类型优化配置
+    if [[ "$TERM_PROGRAM" == "Alacritty" ]] || command_exists alacritty; then
+        log_info "🖥️ 检测到 Alacritty 终端，启用优化配置"
+        # 可以在这里添加 Alacritty 特定的优化
+    elif [[ "$TERM_PROGRAM" == "iTerm.app" ]] || [[ "$TERM_PROGRAM" == "iTerm2" ]]; then
+        log_info "🖥️ 检测到 iTerm2 终端"
+    elif [[ "$TERM" == *"screen"* ]] || [[ "$TERM" == *"tmux"* ]]; then
+        log_info "🖥️ 检测到嵌套 tmux/screen 环境"
+    fi
+    
+    # 检测真彩色支持
+    if [[ "$COLORTERM" == "truecolor" ]] || [[ "$COLORTERM" == "24bit" ]]; then
+        log_info "🌈 检测到真彩色支持"
     fi
 }
 
