@@ -1,0 +1,75 @@
+# 🌍 Cross-Platform Dotfiles
+
+A smart cross-platform configuration management tool for terminal environments.
+
+## ✨ Features
+
+- **Cross-Platform**: Supports macOS, Fedora, Ubuntu, Arch Linux
+- **Smart Detection**: Auto-detects system type and tool paths
+- **One-Click Setup**: Automated installation and configuration
+- **Safe Backup**: Automatically backs up existing configurations
+
+## 🚀 Quick Start
+
+```bash
+# Clone and install
+git clone <your-repo-url>
+cd dotfiles-sync
+./install.sh
+```
+
+Or apply configurations only:
+```bash
+./apply.sh
+```
+
+## 📦 Included Tools
+
+- **tmux**: Terminal multiplexer with enhanced keybindings
+- **fish**: Modern shell with autocompletion
+- **alacritty**: GPU-accelerated terminal emulator
+- **starship**: Cross-shell prompt
+- **neofetch**: System information display
+
+## 🔧 Available Scripts
+
+| Script | Purpose |
+|--------|---------|
+| `install.sh` | Install software packages + apply configurations |
+| `apply.sh` | Apply configurations only (smart cross-platform) |
+| `update.sh` | Sync local configs back to repository |
+
+## 💡 Key Features
+
+### Smart Platform Adaptation
+- Auto-detects shell paths (`/usr/bin/fish` vs `/usr/local/bin/fish`)
+- Platform-specific clipboard tools (`pbcopy` on macOS, `xclip` on Linux)
+- Handles symbolic links and file permissions
+
+### Tmux Enhancements
+- Vim-style navigation (`h/j/k/l`)
+- Mouse support with smart copy/paste
+- System clipboard integration
+- Beautiful status bar
+
+## 🌟 Supported Systems
+
+| OS | Status |
+|----|--------|
+| macOS (Intel/Apple Silicon) | ✅ Full Support |
+| Fedora/RHEL/CentOS | ✅ Full Support |
+| Ubuntu/Debian | ✅ Full Support |
+| Arch Linux | ✅ Full Support |
+
+## 📖 Documentation
+
+- [中文文档](README-zh.md) - Chinese documentation
+- Configuration examples in each directory
+
+## 🤝 Contributing
+
+Issues and Pull Requests are welcome!
+
+## 📄 License
+
+MIT License 
