@@ -11,16 +11,21 @@
 
 ## 🚀 快速开始
 
+### 一键安装
 ```bash
-# 克隆并安装
-git clone <your-repo-url>
-cd dotfiles-sync
-./install.sh
+curl -fsSL https://raw.githubusercontent.com/YOUR_USERNAME/dotfiles/main/scripts/bootstrap.sh | bash
 ```
 
-或仅应用配置：
+### 手动安装
 ```bash
-./apply.sh
+git clone <your-repo-url> ~/.dotfiles
+cd ~/.dotfiles
+make install
+```
+
+### 仅应用配置
+```bash
+make apply
 ```
 
 ## 📦 包含工具
@@ -31,13 +36,16 @@ cd dotfiles-sync
 - **starship**: 跨 shell 命令提示符
 - **neofetch**: 系统信息显示
 
-## 🔧 可用脚本
+## 🔧 可用命令
 
-| 脚本 | 用途 |
+| 命令 | 用途 |
 |------|------|
-| `install.sh` | 安装软件包 + 应用配置 |
-| `apply.sh` | 仅应用配置（智能跨平台） |
-| `update.sh` | 将本地配置同步回仓库 |
+| `make install` | 安装软件包 + 应用配置 |
+| `make apply` | 仅应用配置（智能跨平台） |
+| `make update` | 将本地配置同步回仓库 |
+| `make uninstall` | 卸载配置并恢复备份 |
+| `make test` | 测试配置文件有效性 |
+| `make clean` | 清理临时文件和备份 |
 
 ## 💡 核心功能
 
@@ -65,8 +73,8 @@ cd dotfiles-sync
 
 ### 修改配置后同步
 ```bash
-cd dotfiles-sync
-./update.sh    # 更新配置到仓库
+cd ~/.dotfiles
+make update    # 更新配置到仓库
 git add .
 git commit -m "更新配置"
 git push
@@ -75,7 +83,7 @@ git push
 ### 获取最新配置
 ```bash
 git pull       # 获取最新配置
-./apply.sh     # 应用到本地
+make apply     # 应用到本地
 ```
 
 ## 🛠️ 故障排查

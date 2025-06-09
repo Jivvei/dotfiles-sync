@@ -11,16 +11,21 @@ A smart cross-platform configuration management tool for terminal environments.
 
 ## 🚀 Quick Start
 
+### One-Line Installation
 ```bash
-# Clone and install
-git clone <your-repo-url>
-cd dotfiles-sync
-./install.sh
+curl -fsSL https://raw.githubusercontent.com/YOUR_USERNAME/dotfiles/main/scripts/bootstrap.sh | bash
 ```
 
-Or apply configurations only:
+### Manual Installation
 ```bash
-./apply.sh
+git clone <your-repo-url> ~/.dotfiles
+cd ~/.dotfiles
+make install
+```
+
+### Apply Configurations Only
+```bash
+make apply
 ```
 
 ## 📦 Included Tools
@@ -31,13 +36,16 @@ Or apply configurations only:
 - **starship**: Cross-shell prompt
 - **neofetch**: System information display
 
-## 🔧 Available Scripts
+## 🔧 Available Commands
 
-| Script | Purpose |
-|--------|---------|
-| `install.sh` | Install software packages + apply configurations |
-| `apply.sh` | Apply configurations only (smart cross-platform) |
-| `update.sh` | Sync local configs back to repository |
+| Command | Purpose |
+|---------|---------|
+| `make install` | Install software packages + apply configurations |
+| `make apply` | Apply configurations only (smart cross-platform) |
+| `make update` | Sync local configs back to repository |
+| `make uninstall` | Remove dotfiles and restore backups |
+| `make test` | Test configuration validity |
+| `make clean` | Clean temporary files and backups |
 
 ## 💡 Key Features
 

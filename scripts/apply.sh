@@ -151,7 +151,7 @@ configure_clipboard_tools() {
 apply_tmux() {
     log_step "应用 tmux 配置..."
     
-    if [ ! -f "tmux/.tmux.conf" ]; then
+    if [ ! -f "config/tmux/.tmux.conf" ]; then
         log_error "tmux 配置文件不存在"
         return 1
     fi
@@ -174,7 +174,7 @@ apply_tmux() {
     fi
     
     # 复制新配置
-    cp "tmux/.tmux.conf" "$HOME/"
+    cp "config/tmux/.tmux.conf" "$HOME/"
     
     # 智能配置适配
     if command_exists fish; then

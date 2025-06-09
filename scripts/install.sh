@@ -211,20 +211,20 @@ install_configs() {
     log_info "开始安装配置文件..."
     
     # 安装 tmux 配置
-    if [ -f "tmux/.tmux.conf" ]; then
-        cp "tmux/.tmux.conf" "$HOME/"
+    if [ -f "config/tmux/.tmux.conf" ]; then
+        cp "config/tmux/.tmux.conf" "$HOME/"
         
         # 安装 tmux 脚本和插件
-        if [ -d "tmux/scripts" ]; then
+        if [ -d "config/tmux/scripts" ]; then
             mkdir -p "$HOME/.tmux"
-            cp -r tmux/scripts "$HOME/.tmux/"
+            cp -r config/tmux/scripts "$HOME/.tmux/"
             chmod +x "$HOME/.tmux/scripts/"*.sh
             log_info "安装 tmux 脚本文件"
         fi
         
-        if [ -d "tmux/plugins" ]; then
+        if [ -d "config/tmux/plugins" ]; then
             mkdir -p "$HOME/.tmux"
-            cp -r tmux/plugins "$HOME/.tmux/"
+            cp -r config/tmux/plugins "$HOME/.tmux/"
             log_info "安装 tmux 插件"
         fi
         
@@ -235,9 +235,9 @@ install_configs() {
     fi
     
     # 安装 alacritty 配置  
-    if [ -d "alacritty" ]; then
+    if [ -d "config/alacritty" ]; then
         mkdir -p "$HOME/.config/alacritty"
-        cp -r alacritty/* "$HOME/.config/alacritty/"
+        cp -r config/alacritty/* "$HOME/.config/alacritty/"
         
         # 动态调整 alacritty 中的 shell 路径
         if [ -f "$HOME/.config/alacritty/alacritty.toml" ]; then
@@ -257,22 +257,22 @@ install_configs() {
     fi
     
     # 安装 fish 配置
-    if [ -d "fish" ]; then
+    if [ -d "config/fish" ]; then
         mkdir -p "$HOME/.config/fish"
-        cp -r fish/* "$HOME/.config/fish/"
+        cp -r config/fish/* "$HOME/.config/fish/"
         log_success "安装 fish 配置"
     fi
     
     # 安装 starship 配置
-    if [ -f "starship/starship.toml" ]; then
-        cp "starship/starship.toml" "$HOME/.config/"
+    if [ -f "config/starship/starship.toml" ]; then
+        cp "config/starship/starship.toml" "$HOME/.config/"
         log_success "安装 starship 配置"
     fi
     
     # 安装 neofetch 配置
-    if [ -d "neofetch" ] && [ "$(ls -A neofetch 2>/dev/null)" ]; then
+    if [ -d "config/neofetch" ] && [ "$(ls -A config/neofetch 2>/dev/null)" ]; then
         mkdir -p "$HOME/.config/neofetch"
-        cp -r neofetch/* "$HOME/.config/neofetch/"
+        cp -r config/neofetch/* "$HOME/.config/neofetch/"
         log_success "安装 neofetch 配置"
     fi
 }
