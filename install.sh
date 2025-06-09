@@ -65,6 +65,17 @@ detect_system() {
 command_exists() {
     command -v "$1" >/dev/null 2>&1
 }
+# 检查 macOS 应用是否安装
+macos_app_exists() {
+    case "$1" in
+        "alacritty")
+            [ -d "/Applications/Alacritty.app" ] || command_exists alacritty
+            ;;
+        *)
+            command_exists "$1"
+            ;;
+    esac
+}
 
 # 安装软件包
 install_packages() {
@@ -84,9 +95,13 @@ install_packages() {
         # 安装软件包
         PACKAGES="tmux alacritty fish starship neofetch git"
         for package in $PACKAGES; do
-            if ! command_exists "$package"; then
+            if ! macos_app_exists "$package"; then
                 log_info "安装 $package..."
-                brew install "$package"
+                if [[ "$package" == "alacritty" ]]; then
+                    brew install --cask alacritty
+                else
+                    brew install "$package"
+                fi
                 log_success "已安装 $package"
             else
                 log_warning "$package 已安装，跳过"
