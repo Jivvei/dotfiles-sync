@@ -28,13 +28,45 @@ make install
 make apply
 ```
 
-## 📦 Included Tools
+## 📦 Supported Applications
 
-- **tmux**: Terminal multiplexer with enhanced keybindings
-- **fish**: Modern shell with autocompletion
-- **alacritty**: GPU-accelerated terminal emulator
-- **starship**: Cross-shell prompt
-- **neofetch**: System information display
+### 🪟 Terminal Multiplexer
+**tmux** - Advanced terminal session manager
+- **Enhanced Features**: Vim-style navigation (`h/j/k/l`), mouse support
+- **Smart Copy/Paste**: Cross-platform clipboard integration (xclip/pbcopy)
+- **Beautiful UI**: Custom status bar with system info
+- **Session Management**: Auto-restore sessions, quick window switching
+- **Layouts**: Multiple predefined layouts, easy pane management
+
+### 🐠 Modern Shell  
+**fish** - Friendly Interactive Shell
+- **Smart Features**: Auto-suggestions, syntax highlighting, tab completion
+- **Enhanced Aliases**: Common command shortcuts, tmux integration
+- **Auto-launch**: Intelligent tmux session management for Alacritty
+- **Cross-platform**: Optimized PATH handling for different systems
+
+### 🚀 Terminal Emulator
+**alacritty** - GPU-accelerated terminal
+- **High Performance**: Hardware acceleration, smooth scrolling
+- **Beautiful Theme**: Tokyo Night color scheme, transparent background
+- **Font Support**: Nerd Fonts with icons, customizable sizing
+- **Tmux Integration**: Optimized for tmux workflow
+- **Keyboard Shortcuts**: Intuitive copy/paste, font scaling
+
+### ⭐ Command Prompt
+**starship** - Cross-shell prompt customization
+- **Rich Information**: Git status, language versions, system info
+- **Beautiful Design**: Gruvbox Dark theme with icons
+- **Performance**: Fast rendering, minimal latency
+- **Language Support**: Shows versions for Node.js, Python, Rust, Go, etc.
+- **Git Integration**: Branch status, ahead/behind indicators
+
+### 🎨 System Information
+**neofetch** - System info display tool  
+- **Comprehensive Info**: OS, kernel, shell, packages, memory
+- **Customizable**: Beautiful ASCII art, color themes
+- **Performance**: Hardware specs, uptime display
+- **Cross-platform**: Works on all supported systems
 
 ## 🔧 Available Commands
 
@@ -53,12 +85,28 @@ make apply
 - Auto-detects shell paths (`/usr/bin/fish` vs `/usr/local/bin/fish`)
 - Platform-specific clipboard tools (`pbcopy` on macOS, `xclip` on Linux)
 - Handles symbolic links and file permissions
+- Intelligent package manager detection (dnf/apt/pacman/brew)
 
-### Tmux Enhancements
-- Vim-style navigation (`h/j/k/l`)
-- Mouse support with smart copy/paste
-- System clipboard integration
-- Beautiful status bar
+### Configuration Highlights
+
+#### 🎯 tmux Advanced Features
+- **Enhanced Navigation**: Vim-style keys + mouse support + smart layouts
+- **Clipboard Magic**: Seamless system clipboard integration across platforms
+- **Visual Feedback**: Real-time status bar with system metrics
+- **Session Persistence**: Auto-restore tmux sessions on terminal startup
+- **Quick Actions**: F1 help overlay, pane synchronization, layout cycling
+
+#### 🐠 fish Shell Optimizations  
+- **Smart Auto-launch**: Automatically starts tmux in Alacritty terminal
+- **Enhanced PATH**: Cross-platform binary detection and prioritization
+- **Aliases & Functions**: Pre-configured shortcuts for common operations
+- **Interactive Experience**: Greeting disabled, suggestions enabled
+
+#### 🎨 Visual & Theme Integration
+- **Consistent Theming**: Tokyo Night (Alacritty) + Gruvbox Dark (Starship)
+- **Font Integration**: Nerd Fonts support with proper icon rendering
+- **Transparency Effects**: Subtle background blur and opacity
+- **Color Coordination**: Harmonized color schemes across all tools
 
 ## 🌟 Supported Systems
 

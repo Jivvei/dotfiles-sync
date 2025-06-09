@@ -280,10 +280,13 @@ apply_fish() {
 apply_starship() {
     log_step "应用 starship 配置..."
     
-    if [ ! -f "starship/starship.toml" ]; then
+    if [ ! -f "config/starship/starship.toml" ]; then
         log_warning "starship 配置文件不存在，跳过"
         return
     fi
+    
+    # 确保目录存在
+    mkdir -p "$HOME/.config"
     
     # 备份现有配置
     if [ -f "$HOME/.config/starship.toml" ]; then
@@ -291,7 +294,7 @@ apply_starship() {
         log_info "已备份现有 starship 配置"
     fi
     
-    cp "starship/starship.toml" "$HOME/.config/"
+    cp "config/starship/starship.toml" "$HOME/.config/"
     log_success "starship 配置应用完成"
 }
 

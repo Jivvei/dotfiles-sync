@@ -44,7 +44,8 @@ fi
 
 # 更新 starship 配置
 if [ -f "$HOME/.config/starship.toml" ]; then
-    cp "$HOME/.config/starship.toml" starship/
+    mkdir -p config/starship/
+    cp "$HOME/.config/starship.toml" config/starship/
     echo "   ✓ 更新 starship 配置"
 else
     echo "   ⚠️ starship 配置文件不存在"

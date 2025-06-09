@@ -49,4 +49,11 @@ if status is-interactive
     
     # 自动补全增强
     set -g fish_autosuggestion_enabled 1
+    
+    # 初始化 starship 提示符
+    if command -v starship >/dev/null 2>&1
+        # 设置 starship 配置文件路径
+        set -gx STARSHIP_CONFIG ~/.config/starship.toml
+        starship init fish | source
+    end
 end
