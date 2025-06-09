@@ -213,13 +213,32 @@ install_configs() {
     # 安装 tmux 配置
     if [ -f "tmux/.tmux.conf" ]; then
         cp "tmux/.tmux.conf" "$HOME/"
+        
+        # 动态调整 tmux 中的 shell 路径
+        if command_exists fish; then
+            OPTIMAL_FISH_PATH=$(detect_smart_shell_path "fish")
+            sed -i.bak "s|set-option -g default-shell.*|set-option -g default-shell \"$OPTIMAL_FISH_PATH\"|g" "$HOME/.tmux.conf"
+            log_info "已调整 tmux 中的 shell 路径: $OPTIMAL_FISH_PATH"
+        fi
+        
         log_success "安装 tmux 配置"
     fi
     
-    # 安装 alacritty 配置
+    # 安装 alacritty 配置  
     if [ -d "alacritty" ]; then
         mkdir -p "$HOME/.config/alacritty"
         cp -r alacritty/* "$HOME/.config/alacritty/"
+        
+        # 动态调整 alacritty 中的 shell 路径
+        if [ -f "$HOME/.config/alacritty/alacritty.toml" ]; then
+            if command_exists fish; then
+                OPTIMAL_FISH_PATH=$(detect_smart_shell_path "fish")
+                # 替换 [terminal] 部分的 shell 设置
+                sed -i.bak "s|shell = \".*\"|shell = \"$OPTIMAL_FISH_PATH\"|g" "$HOME/.config/alacritty/alacritty.toml"
+                log_info "已调整 alacritty 中的 shell 路径: $OPTIMAL_FISH_PATH"
+            fi
+        fi
+        
         log_success "安装 alacritty 配置"
     fi
     
@@ -249,21 +268,129 @@ setup_fish_shell() {
     if command_exists fish; then
         FISH_PATH=$(which fish)
         
+        # 跨平台软链接支持：创建用户本地软链接以避免只读文件系统问题
+        if [[ "$SYSTEM" == "macos" ]] && [[ "$FISH_PATH" == "/usr/local/bin/fish" || "$FISH_PATH" == "/opt/homebrew/bin/fish" ]]; then
+            # 创建用户本地 bin 目录
+            mkdir -p "$HOME/.local/bin"
+            
+            # 在用户本地目录创建软链接，提供标准路径兼容
+            if [ ! -e "$HOME/.local/bin/fish" ]; then
+                log_info "创建 fish 软链接以提高跨平台兼容性..."
+                ln -sf "$FISH_PATH" "$HOME/.local/bin/fish"
+                log_success "已创建 ~/.local/bin/fish -> $FISH_PATH"
+            fi
+            
+            # 确保 ~/.local/bin 在 PATH 中
+            setup_local_bin_path
+        fi
+        
         # 检查 fish 是否在 /etc/shells 中
         if ! grep -q "$FISH_PATH" /etc/shells 2>/dev/null; then
             log_info "将 fish 添加到 /etc/shells..."
-            echo "$FISH_PATH" | sudo tee -a /etc/shells
+            echo "$FISH_PATH" | sudo tee -a /etc/shells >/dev/null
+        fi
+        
+        # 如果创建了用户本地软链接，也添加到 /etc/shells
+        if [ -L "$HOME/.local/bin/fish" ] && ! grep -q "$HOME/.local/bin/fish" /etc/shells 2>/dev/null; then
+            echo "$HOME/.local/bin/fish" | sudo tee -a /etc/shells >/dev/null
         fi
         
         # 询问是否设置 fish 为默认 shell
-        echo
-        read -p "是否将 Fish 设置为默认 shell？ (y/n): " -n 1 -r
-        echo
-        if [[ $REPLY =~ ^[Yy]$ ]]; then
-            log_info "设置 fish 为默认 shell..."
-            chsh -s "$FISH_PATH"
-            log_success "已设置 fish 为默认 shell（重新登录后生效）"
+        if [[ "$CURRENT_SHELL" != *"fish"* ]]; then
+            echo
+            log_info "检测到当前 shell: $CURRENT_SHELL"
+            read -p "是否设置 fish 为默认 shell？[y/N]: " set_fish
+            if [[ "$set_fish" =~ ^[Yy]$ ]]; then
+                if chsh -s "$FISH_PATH" 2>/dev/null; then
+                    log_success "已设置 fish 为默认 shell"
+                    log_info "请重新登录以生效"
+                else
+                    log_warn "设置默认 shell 失败，请手动运行: chsh -s $FISH_PATH"
+                fi
+            fi
         fi
+    fi
+}
+
+# 设置用户本地 bin 路径
+setup_local_bin_path() {
+    if ! echo "$PATH" | grep -q "$HOME/.local/bin"; then
+        log_info "将 ~/.local/bin 添加到 PATH..."
+        export PATH="$HOME/.local/bin:$PATH"
+        
+        # 添加到各种 shell 配置文件
+        local shell_configs=(
+            "$HOME/.bashrc"
+            "$HOME/.zshrc" 
+            "$HOME/.profile"
+            "$HOME/.bash_profile"
+        )
+        
+        for shell_rc in "${shell_configs[@]}"; do
+            if [ -f "$shell_rc" ]; then
+                if ! grep -q "export PATH=\"\$HOME/.local/bin:\$PATH\"" "$shell_rc"; then
+                    echo 'export PATH="$HOME/.local/bin:$PATH"' >> "$shell_rc"
+                    log_info "已添加 PATH 设置到 $(basename "$shell_rc")"
+                fi
+            fi
+        done
+        
+        # 如果存在 fish 配置，也添加到 fish
+        if [ -f "$HOME/.config/fish/config.fish" ]; then
+            if ! grep -q "set -gx PATH \$HOME/.local/bin \$PATH" "$HOME/.config/fish/config.fish"; then
+                echo 'set -gx PATH $HOME/.local/bin $PATH' >> "$HOME/.config/fish/config.fish"
+                log_info "已添加 PATH 设置到 fish 配置"
+            fi
+        fi
+    fi
+}
+
+# 智能检测最佳 shell 路径
+detect_smart_shell_path() {
+    local shell_name="$1"
+    
+    case "$shell_name" in
+        "fish")
+            # 优先级：用户本地软链接 > Homebrew > 系统默认
+            local paths=(
+                "$HOME/.local/bin/fish"
+                "/usr/local/bin/fish"      # Intel Mac Homebrew
+                "/opt/homebrew/bin/fish"   # Apple Silicon Homebrew  
+                "/usr/bin/fish"            # 系统默认
+                "/bin/fish"
+            )
+            ;;
+        "zsh")
+            local paths=(
+                "/usr/local/bin/zsh"
+                "/opt/homebrew/bin/zsh"
+                "/usr/bin/zsh"
+                "/bin/zsh"
+            )
+            ;;
+        "bash")
+            local paths=(
+                "/usr/local/bin/bash"
+                "/opt/homebrew/bin/bash"
+                "/usr/bin/bash"
+                "/bin/bash"
+            )
+            ;;
+    esac
+    
+    # 查找第一个存在且可执行的路径
+    for path in "${paths[@]}"; do
+        if [ -x "$path" ]; then
+            echo "$path"
+            return 0
+        fi
+    done
+    
+    # 如果都不存在，使用 which 命令
+    if command -v "$shell_name" >/dev/null 2>&1; then
+        which "$shell_name"
+    else
+        echo "/bin/sh"  # 最后的备选方案
     fi
 }
 
