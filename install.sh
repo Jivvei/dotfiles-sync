@@ -214,10 +214,26 @@ install_configs() {
     if [ -f "tmux/.tmux.conf" ]; then
         cp "tmux/.tmux.conf" "$HOME/"
         
+        # 安装 tmux 脚本和插件
+        if [ -d "tmux/scripts" ]; then
+            mkdir -p "$HOME/.tmux"
+            cp -r tmux/scripts "$HOME/.tmux/"
+            chmod +x "$HOME/.tmux/scripts/"*.sh
+            log_info "安装 tmux 脚本文件"
+        fi
+        
+        if [ -d "tmux/plugins" ]; then
+            mkdir -p "$HOME/.tmux"
+            cp -r tmux/plugins "$HOME/.tmux/"
+            log_info "安装 tmux 插件"
+        fi
+        
         # 动态调整 tmux 中的 shell 路径
         if command_exists fish; then
             OPTIMAL_FISH_PATH=$(detect_smart_shell_path "fish")
             sed -i.bak "s|set-option -g default-shell.*|set-option -g default-shell \"$OPTIMAL_FISH_PATH\"|g" "$HOME/.tmux.conf"
+            sed -i.bak "s|set -g default-shell.*|set -g default-shell \"$OPTIMAL_FISH_PATH\"|g" "$HOME/.tmux.conf"
+            sed -i.bak "s|set -g default-command.*|set -g default-command \"$OPTIMAL_FISH_PATH\"|g" "$HOME/.tmux.conf"
             log_info "已调整 tmux 中的 shell 路径: $OPTIMAL_FISH_PATH"
         fi
         

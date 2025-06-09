@@ -11,6 +11,17 @@ echo "🔄 开始从本地更新配置文件到仓库..."
 if [ -f "$HOME/.tmux.conf" ]; then
     cp "$HOME/.tmux.conf" tmux/
     echo "   ✓ 更新 tmux 配置"
+    
+    # 更新 tmux 脚本和插件
+    if [ -d "$HOME/.tmux/scripts" ]; then
+        cp -r "$HOME/.tmux/scripts" tmux/
+        echo "   ✓ 更新 tmux 脚本"
+    fi
+    
+    if [ -d "$HOME/.tmux/plugins" ]; then
+        cp -r "$HOME/.tmux/plugins" tmux/
+        echo "   ✓ 更新 tmux 插件"
+    fi
 else
     echo "   ⚠️ tmux 配置文件不存在"
 fi
